@@ -17,14 +17,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   useEffect(() => {
     NProgress.start();
 
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       setIsLoading(false);
       NProgress.done(); 
     }, 2000);
 
     return () => {
       NProgress.done();
+    clearTimeout(timer);
+
     };
+    
   }, []);
 
   return (
