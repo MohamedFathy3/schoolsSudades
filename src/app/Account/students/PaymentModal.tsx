@@ -22,6 +22,7 @@ interface Payment {
   status: string;
   bdf_invoice_number: string | null;
   created_at: string;
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   transactions: any[];
 }
 

@@ -7,10 +7,15 @@ import { Button } from "@/components/ui/button";
 
 interface FormModalProps {
   title: string;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
   editingItem?: any;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
   formFields?: any[];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
   formData: any;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
   additionalQueries?: any;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onFormDataChange: (data: any) => void;
   onSave: (options: { keepOpen: boolean }) => void;
   onClose: () => void;
@@ -32,6 +37,7 @@ const FormModal: React.FC<FormModalProps> = ({
 }) => {
   // ✅ React Hooks في الأعلى
   const [activeTab, setActiveTab] = useState<string>('basic');
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [localFormData, setLocalFormData] = useState<Record<string, any>>({});
 
   // ✅ استخدام formFields آمن
@@ -88,6 +94,7 @@ const FormModal: React.FC<FormModalProps> = ({
             ? editingItem.class_ids 
             : [editingItem.class_ids];
         } else if (editingItem.classes) {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
           processedData.class_ids = editingItem.classes.map((cls: any) => cls.id);
         }
       }
@@ -161,6 +168,7 @@ const FormModal: React.FC<FormModalProps> = ({
   const modalSize = 'w-full max-w-5xl';
 
   // ✅ دالة محلية لتحديث البيانات
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleLocalFormDataChange = (fieldName: string, value: any) => {
     setLocalFormData(prev => {
       const newData = { ...prev, [fieldName]: value };

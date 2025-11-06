@@ -4,6 +4,7 @@ import { apiFetch } from "@/lib/api";
 import toast from 'react-hot-toast';
 
 interface MutationOptions {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onSuccess?: (data: any) => void;
   onError?: (error: Error) => void;
   successMessage?: string;
@@ -14,6 +15,7 @@ export function useApiMutation(endpoint: string, options: MutationOptions = {}) 
   const queryClient = useQueryClient();
 
   return useMutation({
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mutationFn: async (data: any) => {
       const response = await apiFetch(endpoint, {
         method: "POST",

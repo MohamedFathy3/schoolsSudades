@@ -36,19 +36,25 @@ export default function ProfilePage() {
     );
   }
 
-  // حساب إحصائيات الامتحانات
-  const examStats = user.exam_results?.reduce((acc, exam) => {
+const examStats = user.exam_results?.reduce((acc, exam) => {
+  if (exam && exam.student_mark !== undefined && exam.total_mark !== undefined && exam.total_mark > 0) {
     const percentage = (exam.student_mark / exam.total_mark) * 100;
     acc.totalExams++;
     acc.averageScore += percentage;
     if (percentage >= 50) acc.passedExams++;
     if (percentage > acc.highestScore) acc.highestScore = percentage;
-    return acc;
-  }, { totalExams: 0, averageScore: 0, passedExams: 0, highestScore: 0 });
+  }
+  return acc;
+}, { totalExams: 0, averageScore: 0, passedExams: 0, highestScore: 0 }) || {
+  totalExams: 0,
+  averageScore: 0,
+  passedExams: 0,
+  highestScore: 0
+};
 
-  const averageScore = examStats.totalExams > 0 ? examStats.averageScore / examStats.totalExams : 0;
+const averageScore = examStats.totalExams > 0 ? examStats.averageScore / examStats.totalExams : 0;
 
-  // بيانات الحضور
+
   const attendanceData = user.attendance_report ? Object.values(user.attendance_report)[0] : null;
 
   return (
@@ -103,7 +109,7 @@ export default function ProfilePage() {
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-blue-600">
-                    {examStats.totalExams}
+                    {examStats?.totalExams || 'null'}
                   </div>
                   <div className="text-sm text-gray-600">Exams</div>
                 </div>
@@ -271,15 +277,15 @@ export default function ProfilePage() {
                   <div className="space-y-3">
                     <div className="flex items-center gap-2">
                       <span className="text-sm text-gray-600">Name:</span>
-                      <span className="font-medium text-gray-900">{user.father.name}</span>
+                      <span className="font-medium text-gray-900">{user.father?.name || 'Not specified'}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Phone className="w-4 h-4 text-gray-400" />
-                      <span className="font-medium text-gray-900">{user.father.phone}</span>
+                      <span className="font-medium text-gray-900">{user.father?.phone || 'Not specified'}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Briefcase className="w-4 h-4 text-gray-400" />
-                      <span className="text-sm text-gray-900">{user.father.job}</span>
+                      <span className="text-sm text-gray-900">{user.father?.job || 'Not specified'}</span>
                     </div>
                   </div>
                 </div>
@@ -294,15 +300,15 @@ export default function ProfilePage() {
                   <div className="space-y-3">
                     <div className="flex items-center gap-2">
                       <span className="text-sm text-gray-600">Name:</span>
-                      <span className="font-medium text-gray-900">{user.mother.name}</span>
+                      <span className="font-medium text-gray-900">{user.mother?.name || 'Not specified'}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Phone className="w-4 h-4 text-gray-400" />
-                      <span className="font-medium text-gray-900">{user.mother.phone}</span>
+                      <span className="font-medium text-gray-900">{user.mother?.phone || 'Not specified'}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Briefcase className="w-4 h-4 text-gray-400" />
-                      <span className="text-sm text-gray-900">{user.mother.job}</span>
+                      <span className="text-sm text-gray-900">{user.mother?.job || 'Not specified'}</span>
                     </div>
                   </div>
                 </div>
@@ -409,7 +415,7 @@ export default function ProfilePage() {
                   <User className="w-5 h-5 text-orange-600" />
                   <div>
                     <p className="text-sm text-gray-600">Receptionist</p>
-                    <p className="font-semibold text-gray-900">{user.reception.name}</p>
+                    <p className="font-semibold text-gray-900">{user.reception?.name || 'ds'}</p>
                   </div>
                 </div>
                 
@@ -417,7 +423,7 @@ export default function ProfilePage() {
                   <Mail className="w-5 h-5 text-blue-600" />
                   <div>
                     <p className="text-sm text-gray-600">Email</p>
-                    <p className="font-medium text-gray-900">{user.reception.email}</p>
+                    <p className="font-medium text-gray-900">{user.reception?.email || 'null'}</p>
                   </div>
                 </div>
               </div>
@@ -433,14 +439,14 @@ export default function ProfilePage() {
               <div className="space-y-4">
                 <div className="text-center p-4 bg-green-50 rounded-xl">
                   <div className="text-2xl font-bold text-green-600">
-                    {examStats.passedExams}/{examStats.totalExams}
+                    {examStats?.passedExams || 'null' }/{examStats?.totalExams  || 'null'}
                   </div>
                   <div className="text-sm text-gray-600">Exams Passed</div>
                 </div>
                 
                 <div className="text-center p-4 bg-blue-50 rounded-xl">
                   <div className="text-2xl font-bold text-blue-600">
-                    {examStats.highestScore.toFixed(1)}%
+                    {examStats?.highestScore.toFixed(1)}%
                   </div>
                   <div className="text-sm text-gray-600">Highest Score</div>
                 </div>

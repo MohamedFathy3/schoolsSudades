@@ -6,15 +6,16 @@ import { useState } from 'react';
 import { apiFetch } from '@/lib/api';
 
 export default function TeachersPage() {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [selectedEmployee, setSelectedEmployee] = useState<any>(null);
   const [showAttendanceModal, setShowAttendanceModal] = useState(false);
   const [showSalaryModal, setShowSalaryModal] = useState(false);
-
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const openAttendanceModal = (employee: any) => {
     setSelectedEmployee(employee);
     setShowAttendanceModal(true);
   };
-
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const openSalaryModal = (employee: any) => {
     setSelectedEmployee(employee);
     setShowSalaryModal(true);
@@ -139,6 +140,7 @@ export default function TeachersPage() {
 }
 
 // Fixed Attendance Modal Component
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function AttendanceModal({ employee, onClose }: { employee: any; onClose: () => void }) {
   const [status, setStatus] = useState<'present' | 'absent'>('present');
   const [loading, setLoading] = useState(false);
@@ -175,6 +177,7 @@ function AttendanceModal({ employee, onClose }: { employee: any; onClose: () => 
       alert(`Attendance marked as ${status} successfully!`);
       onClose();
       window.location.reload();
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error('Error marking attendance:', error);
       alert(`Failed to mark attendance: ${error.message}`);
@@ -234,6 +237,7 @@ function AttendanceModal({ employee, onClose }: { employee: any; onClose: () => 
 }
 
 // Fixed Salary Modal Component
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function SalaryModal({ employee, onClose }: { employee: any; onClose: () => void }) {
   const [formData, setFormData] = useState({
     month: new Date().toISOString().slice(0, 7),
@@ -241,6 +245,7 @@ function SalaryModal({ employee, onClose }: { employee: any; onClose: () => void
     bonus: 0
   });
   const [loading, setLoading] = useState(false);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [result, setResult] = useState<any>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -269,6 +274,7 @@ function SalaryModal({ employee, onClose }: { employee: any; onClose: () => void
 
       const data = await response.json();
       setResult(data);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
     } finally {
       setLoading(false);

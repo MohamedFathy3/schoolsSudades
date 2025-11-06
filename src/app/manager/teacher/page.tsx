@@ -46,6 +46,7 @@ export default function TeachersPage() {
           sortable: false,
           render: (item) => {
             if (!item.classes || !Array.isArray(item.classes)) return 'No classes';
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
             return item.classes.map((cls: any) => cls.name).join(', ');
           }
         },

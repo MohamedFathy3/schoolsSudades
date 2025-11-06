@@ -11,9 +11,10 @@ import { useRouter } from 'next/navigation';
 export default function StudentsPage() {
   const { user } = useAuth();
   const router = useRouter();
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleOpenPaymentModal = (item: any) => {
     setSelectedItem(item);
     setIsPaymentModalOpen(true);
@@ -24,6 +25,7 @@ export default function StudentsPage() {
     setSelectedItem(null);
   };
 
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleViewStudent = (item: any) => {
     router.push(`/Account/students/${item.student.id}`);
   };

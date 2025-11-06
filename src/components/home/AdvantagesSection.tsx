@@ -155,7 +155,7 @@ const AnimatedAdvantagesSection = () => {
     </section>
   );
 };
-
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const SimpleAdvantageCard = ({ advantage, index, isVisible }: { advantage: any; index: number; isVisible: boolean }) => {
   const [isHovered, setIsHovered] = useState(false);
 

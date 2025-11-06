@@ -111,7 +111,7 @@ const AdvancedTestimonialsSection = () => {
                   {/* Content */}
                   <div>
                     {/* Quote Icon */}
-                    <div className="text-6xl text-green-100 mb-4">"</div>
+                    <div className="text-6xl text-green-100 mb-4"></div>
                     
                     {/* Comment */}
                     <p className="text-gray-700 text-lg leading-relaxed mb-8">

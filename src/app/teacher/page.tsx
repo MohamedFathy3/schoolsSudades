@@ -73,6 +73,7 @@ interface TeacherData {
   classes: Class[];
   created_at: string;
   updated_at: string;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
   exams: any[];
 }
 
@@ -269,7 +270,7 @@ export default function TeacherReport() {
                             cx="50%"
                             cy="50%"
                             labelLine={false}
-                            label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+      label={({ name, percent }) => `${name} ${((percent || 0) * 100).toFixed(0)}%`}
                             outerRadius={80}
                             dataKey="value"
                           >

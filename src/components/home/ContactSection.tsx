@@ -58,12 +58,12 @@ const ContactSection = () => {
             </div>
             
             <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
-              Let's Start a <span className="text-green-600">Conversation</span>
+              Lets Start a <span className="text-green-600">Conversation</span>
             </h2>
             
             <p className="text-lg text-gray-600 mb-8 leading-relaxed">
               Have questions about our courses? Ready to start your learning journey? 
-              We're here to help! Send us a message and we'll get back to you within 24 hours.
+              Were here to help! Send us a message and well get back to you within 24 hours.
             </p>
 
             {/* Contact Information */}
@@ -124,7 +124,7 @@ const ContactSection = () => {
             {isSuccess && (
               <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl text-green-700 flex items-center space-x-3 animate-fade-in">
                 <i className="fas fa-check-circle text-green-500"></i>
-                <span>Message sent successfully! We'll get back to you soon.</span>
+                <span>Message sent successfully! Well get back to you soon.</span>
               </div>
             )}
 

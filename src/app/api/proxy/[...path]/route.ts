@@ -1,14 +1,11 @@
-// src/app/api/proxy/[...path]/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 
 const baseUrl = process.env.TARGET_API || 'https://job.professionalacademyedu.com/api';
 
-// دالة لقراءة الـ body مرة واحدة فقط وتخزينه
-let requestBody: any = null;
+let requestBody: unknown = null;
 let bodyRead = false;
 
-async function readRequestBody(request: NextRequest) {
-  // إذا الـ body اتعمل قراءة قبل كده، ارجع النسخة المخزنة
+async function readRequestBody(request: NextRequest): Promise<unknown> {
   if (bodyRead && requestBody !== null) {
     return requestBody;
   }
@@ -24,7 +21,6 @@ async function readRequestBody(request: NextRequest) {
     } else if (contentType.includes('application/x-www-form-urlencoded')) {
       requestBody = await request.formData();
     } else {
-      // لأي نوع تاني، جرب كـ text
       requestBody = await request.text();
     }
     
@@ -36,8 +32,7 @@ async function readRequestBody(request: NextRequest) {
   }
 }
 
-// Reset function علشان نreset الـ body لكل request جديد
-function resetBodyState() {
+function resetBodyState(): void {
   requestBody = null;
   bodyRead = false;
 }
@@ -45,51 +40,46 @@ function resetBodyState() {
 async function proxyRequest(
   method: string,
   endpoint: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  body?: any,
+  body?: unknown,
   request?: NextRequest,
   token?: string,
   schoolId?: string
-) {
+): Promise<{ response: Response; data: unknown }> {
   const url = `${baseUrl}/${endpoint}`;
   
   const headers: HeadersInit = {};
 
-  // استخدام التوكن الممرر مباشرة أو استخراجه من الكوكيز
-  let authToken = token;
+  let finalToken = token;
   
-  if (!authToken) {
-    // استخراج التوكن من الكوكيز
-    const cookies = request?.headers.get('cookie') || '';
+  if (!finalToken && request) {
+    const cookies = request.headers.get('cookie') || '';
     const tokenMatch = cookies.match(/token=([^;]+)/);
     
     if (tokenMatch) {
-      authToken = decodeURIComponent(tokenMatch[1]);
+      finalToken = decodeURIComponent(tokenMatch[1]);
     }
   }
 
-  if (authToken) {
-    headers['Authorization'] = `Bearer ${authToken}`;
+  if (finalToken) {
+    headers['Authorization'] = `Bearer ${finalToken}`;
     console.log('✅ Token added to headers');
   }
 
-  // استخدام schoolId الممرر مباشرة أو استخراجه من الكوكيز
-  let schoolID = schoolId;
+  let finalSchoolId = schoolId;
   
-  if (!schoolID) {
-    // استخراج school_id من الكوكيز
-    const cookies = request?.headers.get('cookie') || '';
+  if (!finalSchoolId && request) {
+    const cookies = request.headers.get('cookie') || '';
     const schoolIdMatch = cookies.match(/school_id=([^;]+)/);
     
     if (schoolIdMatch) {
-      schoolID = decodeURIComponent(schoolIdMatch[1]);
+      finalSchoolId = decodeURIComponent(schoolIdMatch[1]);
     }
   }
 
   // إضافة X-School-ID header إذا موجود
-  if (schoolID) {
-    headers['X-School-ID'] = schoolID;
-    console.log('🏫 School ID added to headers:', schoolID);
+  if (finalSchoolId) {
+    headers['X-School-ID'] = finalSchoolId;
+    console.log('🏫 School ID added to headers:', finalSchoolId);
   }
 
   const fetchOptions: RequestInit = {
@@ -127,9 +117,7 @@ async function proxyRequest(
   }
 }
 
-// POST - مع دعم FormData
-export async function POST(request: NextRequest) {
-  // Reset الـ body state علشان كل request جديد
+export async function POST(request: NextRequest): Promise<NextResponse> {
   resetBodyState();
   
   try {
@@ -137,44 +125,36 @@ export async function POST(request: NextRequest) {
     const path = url.pathname.split('/api/proxy/')[1].split('/');
     const endpoint = path.join('/');
     
-    const contentType = request.headers.get('content-type') || '';
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let body: any = undefined;
-
     console.log('📨 Received POST request for:', endpoint);
-    console.log('📧 Content-Type:', contentType);
 
-    // استخراج التوكن و school_id من headers مخصصة إذا أرسلت
     const authHeader = request.headers.get('x-auth-token');
     const schoolHeader = request.headers.get('x-school-id');
-    let token: string | undefined = authHeader || undefined;
-    let schoolId: string | undefined = schoolHeader || undefined;
+    const token: string | undefined = authHeader || undefined;
+    const schoolId: string | undefined = schoolHeader || undefined;
 
-    // قراءة الـ body مرة واحدة فقط باستخدام الدالة الجديدة
-    body = await readRequestBody(request);
+    const body = await readRequestBody(request);
     console.log('📄 Body read successfully, type:', body ? (body instanceof FormData ? 'FormData' : typeof body) : 'No body');
 
     const { response, data } = await proxyRequest('POST', endpoint, body, request, token, schoolId);
 
-    // معالجة تسجيل الدخول - حفظ التوكن و school_id
-    if ((endpoint === 'login/admin' || endpoint === 'user/login') && response.ok && data && data.token) {
+    if ((endpoint === 'login/admin' || endpoint === 'user/login') && response.ok && data && typeof data === 'object' && 'token' in data) {
       console.log('🔐 Login successful, returning token in response');
       
-      // استخراج school_id من بيانات المستخدم
-      const userSchoolId = data.data?.school_id || null;
+      const responseData = data as { token: string; data?: { school_id?: string } };
       
-      const responseData = {
-        ...data,
-        _token: data.token,
+      const userSchoolId = responseData.data?.school_id || null;
+      
+      const enhancedResponseData = {
+        ...responseData,
+        _token: responseData.token,
         _school_id: userSchoolId
       };
       
-      const res = NextResponse.json(responseData, { status: response.status });
+      const res = NextResponse.json(enhancedResponseData, { status: response.status });
       
-      // حفظ التوكن و school_id في الكوكيز
       res.cookies.set({
         name: 'token',
-        value: data.token,
+        value: responseData.token,
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
@@ -205,13 +185,11 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   } finally {
-    // Reset الـ body state بعد ما نخلص
     resetBodyState();
   }
 }
 
-// GET - مع إمكانية تمرير التوكن و school_id عبر headers
-export async function GET(request: NextRequest) {
+export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
     const url = new URL(request.url);
     const path = url.pathname.split('/api/proxy/')[1].split('/');
@@ -219,11 +197,10 @@ export async function GET(request: NextRequest) {
 
     console.log('📨 Received GET request for:', endpoint);
 
-    // استخراج التوكن و school_id من headers مخصصة
     const authHeader = request.headers.get('x-auth-token');
     const schoolHeader = request.headers.get('x-school-id');
-    let token: string | undefined = authHeader || undefined;
-    let schoolId: string | undefined = schoolHeader || undefined;
+    const token: string | undefined = authHeader || undefined;
+    const schoolId: string | undefined = schoolHeader || undefined;
 
     const { response, data } = await proxyRequest('GET', endpoint, undefined, request, token, schoolId);
     return NextResponse.json(data, { status: response.status });
@@ -236,26 +213,20 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// PUT - بنفس المنطق
-export async function PUT(request: NextRequest) {
+export async function PUT(request: NextRequest): Promise<NextResponse> {
   resetBodyState();
   
   try {
     const url = new URL(request.url);
     const path = url.pathname.split('/api/proxy/')[1].split('/');
     const endpoint = path.join('/');
-    
-    const contentType = request.headers.get('content-type') || '';
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let body: any = undefined;
 
     const authHeader = request.headers.get('x-auth-token');
     const schoolHeader = request.headers.get('x-school-id');
-    let token: string | undefined = authHeader || undefined;
-    let schoolId: string | undefined = schoolHeader || undefined;
+    const token: string | undefined = authHeader || undefined;
+    const schoolId: string | undefined = schoolHeader || undefined;
 
-    // قراءة الـ body مرة واحدة فقط
-    body = await readRequestBody(request);
+    const body = await readRequestBody(request);
 
     const { response, data } = await proxyRequest('PUT', endpoint, body, request, token, schoolId);
     return NextResponse.json(data, { status: response.status });
@@ -270,26 +241,20 @@ export async function PUT(request: NextRequest) {
   }
 }
 
-// PATCH - بنفس المنطق
-export async function PATCH(request: NextRequest) {
+export async function PATCH(request: NextRequest): Promise<NextResponse> {
   resetBodyState();
   
   try {
     const url = new URL(request.url);
     const path = url.pathname.split('/api/proxy/')[1].split('/');
     const endpoint = path.join('/');
-    
-    const contentType = request.headers.get('content-type') || '';
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let body: any = undefined;
 
     const authHeader = request.headers.get('x-auth-token');
     const schoolHeader = request.headers.get('x-school-id');
-    let token: string | undefined = authHeader || undefined;
-    let schoolId: string | undefined = schoolHeader || undefined;
+    const token: string | undefined = authHeader || undefined;
+    const schoolId: string | undefined = schoolHeader || undefined;
 
-    // قراءة الـ body مرة واحدة فقط
-    body = await readRequestBody(request);
+    const body = await readRequestBody(request);
 
     const { response, data } = await proxyRequest('PATCH', endpoint, body, request, token, schoolId);
     return NextResponse.json(data, { status: response.status });
@@ -304,8 +269,7 @@ export async function PATCH(request: NextRequest) {
   }
 }
 
-// DELETE - بنفس المنطق
-export async function DELETE(request: NextRequest) {
+export async function DELETE(request: NextRequest): Promise<NextResponse> {
   resetBodyState();
   
   try {
@@ -315,10 +279,10 @@ export async function DELETE(request: NextRequest) {
 
     const authHeader = request.headers.get('x-auth-token');
     const schoolHeader = request.headers.get('x-school-id');
-    let token: string | undefined = authHeader || undefined;
-    let schoolId: string | undefined = schoolHeader || undefined;
+    const token: string | undefined = authHeader || undefined;
+    const schoolId: string | undefined = schoolHeader || undefined;
 
-    let body = undefined;
+    let body: unknown = undefined;
     
     try {
       const contentType = request.headers.get('content-type');

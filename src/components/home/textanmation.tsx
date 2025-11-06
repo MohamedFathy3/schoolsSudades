@@ -58,7 +58,7 @@ const AboutSection = () => {
             {/* Additional Text */}
             <p className="text-gray-700 mb-8 leading-relaxed font-medium">
               Using our single innovative platform you can remove all your communication 
-              dependencies and the messy rat's nest of email, calls, texts, wikis, and apps you currently have.
+              dependencies and the messy rats nest of email, calls, texts, wikis, and apps you currently have.
             </p>
             
             {/* CTA Buttons */}

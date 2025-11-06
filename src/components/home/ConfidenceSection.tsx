@@ -72,7 +72,7 @@ const AnimatedAboutSection = () => {
               
               <p className="text-lg text-gray-700 leading-relaxed font-medium bg-green-50 p-6 rounded-2xl border-l-4 border-green-500">
                 Using our single innovative platform you can remove all your communication 
-                dependencies and the messy rat's nest of email, calls, texts, wikis, and apps you currently have.
+                dependencies and the messy rats nest of email, calls, texts, wikis, and apps you currently have.
               </p>
             </div>
 

@@ -102,8 +102,23 @@ ${colorConfig
 
 const ChartTooltip = RechartsPrimitive.Tooltip
 
-// Simple tooltip content without complex types
-const ChartTooltipContent = ({ active, payload, label }: any) => {
+// Define proper types for tooltip content
+interface TooltipPayloadItem {
+  name: string
+  value: number
+  color: string
+  dataKey: string | number
+  payload: Record<string, unknown>
+}
+
+interface TooltipProps {
+  active?: boolean
+  payload?: TooltipPayloadItem[]
+  label?: string
+}
+
+// Simple tooltip content with proper types
+const ChartTooltipContent: React.FC<TooltipProps> = ({ active, payload, label }) => {
   if (!active || !payload || !payload.length) {
     return null
   }
@@ -112,7 +127,7 @@ const ChartTooltipContent = ({ active, payload, label }: any) => {
     <div className="rounded-lg border bg-background p-2 shadow-sm">
       <div className="grid gap-1">
         <p className="font-medium">{label}</p>
-        {payload.map((entry: any, index: number) => (
+        {payload.map((entry, index) => (
           <div key={index} className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-2">
               <div 

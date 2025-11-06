@@ -4,6 +4,13 @@
 import React, { useState, useMemo } from 'react';
 import { Search, X, Check } from 'lucide-react';
 
+// تعريف واجهة للفصل الدراسي
+interface Class {
+  id: number;
+  name?: string;
+  school_name?: string;
+}
+
 interface ClassSelectorProps {
   value: number[] | number | string;
   onChange: (value: number[] | number | string) => void;
@@ -23,21 +30,26 @@ export const ClassSelector: React.FC<ClassSelectorProps> = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
 
-  // جلب بيانات الفصول من additionalQueries
-  const classesData = additionalQueries?.['classe']?.data || [];
-  
-  // تحويل القيمة لـ array إذا كانت multiple
+  const classesData = useMemo(() => {
+    const data = additionalQueries?.['classe']?.data || [];
+    return data.map(item => {
+      if (item && typeof item === 'object' && 'id' in item) {
+        return item as Class;
+      }
+      return { id: 0, name: 'Unknown Class' };
+    });
+  }, [additionalQueries]);
+
   const selectedValues = Array.isArray(value) 
     ? value 
     : value 
       ? [value].flat().map(v => typeof v === 'string' ? parseInt(v) : v)
       : [];
 
-  // تصفية البيانات بالبحث
   const filteredClasses = useMemo(() => {
     if (!searchTerm) return classesData;
     
-    return classesData.filter((cls: any) =>
+    return classesData.filter((cls: Class) =>
       cls.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       cls.school_name?.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -59,7 +71,6 @@ export const ClassSelector: React.FC<ClassSelectorProps> = ({
 
   return (
     <div className="space-y-3">
-      {/* الهيدر البسيط */}
       <div className="flex items-center justify-between">
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
           {label}
@@ -77,7 +88,6 @@ export const ClassSelector: React.FC<ClassSelectorProps> = ({
         )}
       </div>
 
-      {/* شريط البحث البسيط */}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
         <input
@@ -97,11 +107,10 @@ export const ClassSelector: React.FC<ClassSelectorProps> = ({
         )}
       </div>
 
-      {/* قائمة الفصول المدمجة */}
       <div className="border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800 max-h-60 overflow-y-auto">
         {filteredClasses.length > 0 ? (
           <div className="divide-y divide-gray-200 dark:divide-gray-600">
-            {filteredClasses.map((cls: any) => {
+            {filteredClasses.map((cls: Class) => {
               const isSelected = selectedValues.includes(cls.id);
               return (
                 <label 
@@ -120,7 +129,6 @@ export const ClassSelector: React.FC<ClassSelectorProps> = ({
                     className="sr-only"
                   />
                   
-                  {/* تصميم بسيط */}
                   <div className={`
                     flex items-center justify-center w-4 h-4 border rounded mr-3 flex-shrink-0
                     ${isSelected 
@@ -159,7 +167,6 @@ export const ClassSelector: React.FC<ClassSelectorProps> = ({
         )}
       </div>
 
-      {/* ملخص صغير للمختارين */}
       {selectedValues.length > 0 && (
         <div className="text-xs text-gray-600 dark:text-gray-400">
           Selected: {selectedValues.length} class{selectedValues.length !== 1 ? 'es' : ''}

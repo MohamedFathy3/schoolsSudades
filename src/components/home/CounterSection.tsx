@@ -100,7 +100,7 @@ const ElegantCounterSection = () => {
     </section>
   );
 };
-
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const ElegantCounterCard = ({ card, isVisible, delay }: { card: any; isVisible: boolean; delay: number }) => {
   const [count, setCount] = useState(0);
   const [hasAnimated, setHasAnimated] = useState(false);

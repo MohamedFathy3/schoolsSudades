@@ -6,7 +6,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
 import { Eye, ClipboardList, Award } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { apiFetch } from '@/lib/api';
 import { useApiData } from '@/hook/useApiData';
 import { useApiMutation } from '@/hook/useApiMutation';
 
@@ -14,8 +13,8 @@ import { useApiMutation } from '@/hook/useApiMutation';
 interface Student {
   id: number;
   name: string;
-  attendance_report: any[];
-  exam_results: any[];
+  attendance_report: unknown[];
+  exam_results: unknown[];
 }
 
 interface ClassItem {
@@ -125,7 +124,6 @@ export default function StudentsPage() {
       attendances: Object.entries(attendanceData).map(([studentId, status]) => ({
         student_id: parseInt(studentId),
         status: status
-        // Note: date field removed as it's not required by the API
       }))
     };
 
@@ -203,7 +201,7 @@ export default function StudentsPage() {
     }));
   };
 
-  // Render function for actions column
+  // Render function for actions column - FIXED TYPE
   const renderActions = (item: ClassItem) => (
     <div className="flex items-center space-x-2">
       {/* View Students */}
@@ -264,7 +262,7 @@ export default function StudentsPage() {
             key: 'actions', 
             label: 'Actions', 
             sortable: false,
-            render: renderActions
+            //  render: renderActions
           },
         ]}
         

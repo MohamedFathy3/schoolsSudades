@@ -115,7 +115,7 @@ export default function RevenuePage() {
     ];
     
     return months.map(month => ({
-      month: month.slice(0, 3), // أول 3 أحرف من اسم الشهر
+      month: month.slice(0, 3), 
       revenue: parseFloat(data[month] || "0"),
       fullMonth: month
     }));
@@ -144,7 +144,6 @@ export default function RevenuePage() {
     return data.slice(-selectedMonths);
   };
 
-  // إعدادات الرسوم البيانية
   const lineChartConfig = {
     revenue: {
       label: "Revenue",
@@ -384,34 +383,34 @@ export default function RevenuePage() {
         </CardHeader>
         <CardContent className="pb-0">
           {chartData.length > 0 ? (
-            <ChartContainer
-              config={pieChartConfig}
-              className="mx-auto aspect-square max-h-[250px]"
-            >
-              <PieChart>
-                <ChartTooltip
-                  cursor={false}
-                  content={<ChartTooltipContent />}
-                />
-                <Pie
-                  data={chartData}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={80}
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                  labelLine={false}
-                >
-                  {chartData.map((entry, index) => (
-                    <Cell 
-                      key={`cell-${index}`} 
-                      fill={PIE_COLORS[index % PIE_COLORS.length]} 
-                    />
-                  ))}
-                </Pie>
-              </PieChart>
-            </ChartContainer>
+        <ChartContainer
+  config={pieChartConfig}
+  className="mx-auto aspect-square max-h-[250px]"
+>
+  <PieChart>
+    <ChartTooltip
+      cursor={false}
+      content={<ChartTooltipContent />}
+    />
+    <Pie
+      data={chartData}
+      dataKey="value"
+      nameKey="name"
+      cx="50%"
+      cy="50%"
+      outerRadius={80}
+      label={({ name, percent }) => `${name} ${((percent || 0) * 100).toFixed(0)}%`}
+      labelLine={false}
+    >
+      {chartData.map((entry, index) => (
+        <Cell 
+          key={`cell-${index}`} 
+          fill={PIE_COLORS[index % PIE_COLORS.length]} 
+        />
+      ))}
+    </Pie>
+  </PieChart>
+</ChartContainer>
           ) : (
             <div className="flex items-center justify-center h-[250px] text-gray-500">
               No revenue data available for the selected period
@@ -620,20 +619,20 @@ export default function RevenuePage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {monthlyData.map((monthData, index) => (
-                <div key={index} className="flex items-center justify-between p-3 rounded-lg border border-gray-200 dark:border-gray-700">
-                  <div className="flex items-center gap-3">
-                    <div 
-                      className="w-3 h-3 rounded-full" 
-                      style={{ backgroundColor: PIE_COLORS[index % PIE_COLORS.length] }}
-                    />
-                    <span className="font-medium">{monthData.fullMonth}</span>
-                  </div>
-                  <span className={`font-semibold ${monthData.revenue > 0 ? 'text-green-600' : 'text-gray-500'}`}>
-                    ${monthData.revenue.toFixed(2)}
-                  </span>
-                </div>
-              ))}
+        {monthlyData.map((monthData, index) => (
+  <div key={index} className="flex items-center justify-between p-3 rounded-lg border border-gray-200 dark:border-gray-700">
+    <div className="flex items-center gap-3">
+      <div 
+        className="w-3 h-3 rounded-full" 
+        style={{ backgroundColor: PIE_COLORS[index % PIE_COLORS.length] }}
+      />
+      <span className="font-medium">{monthData.month}</span> {/* استخدام month بدلاً من fullMonth */}
+    </div>
+    <span className={`font-semibold ${monthData.revenue > 0 ? 'text-green-600' : 'text-gray-500'}`}>
+      ${monthData.revenue.toFixed(2)}
+    </span>
+  </div>
+))}
             </div>
           </CardContent>
         </Card>

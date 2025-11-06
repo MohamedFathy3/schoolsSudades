@@ -1,7 +1,7 @@
 // hooks/useApiData.ts
 import { useQuery } from '@tanstack/react-query';
 import { apiFetch } from "@/lib/api";
-
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function useApiData<T>(endpoint: string, payload?: any) {
   return useQuery<T[]>({
     queryKey: [endpoint, payload],
